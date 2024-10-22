@@ -16,6 +16,10 @@ PORT = 3333;
 
 server.use(express.json());
 
+server.get('/health', (req, res) => {
+  return res.json({ message: 'App is running' });
+});
+
 server.use(routes);
 
 server.use(errors());

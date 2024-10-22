@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const AppError = require('../../../shared/errors/AppError');
 
 const { comparePassword } = require('../../../shared/utils/encrypt');
@@ -16,8 +18,15 @@ class LoginUserService {
     await comparePassword(password, user.password);
 
     delete user.password; // Remove password from response
+    const token = jwt.sign(
+      { id: user.id, name: user.name },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRE,
+      }
+    );
 
-    return user;
+    return { user, token };
   }
 }
 
