@@ -1,6 +1,17 @@
+const usersRepository = require('../../repositories/UsersRepository');
+
+const CreateUserService = require('../../services/CreateUserService');
+
 module.exports = {
   async createUser(resquest, response) {
-    return response.json({ message: 'User created' });
+    const { name, email, password } = resquest.body;
+    const createUser = new CreateUserService(usersRepository);
+    const user = await createUser.execute({
+      name,
+      email,
+      password,
+    });
+    return response.json({ data: user });
   },
 
   // async getAllUser(resquest, response) {
