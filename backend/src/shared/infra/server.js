@@ -14,11 +14,11 @@ const server = express();
 
 PORT = 3333;
 
+const cors = require('cors');
+
 server.use(express.json());
 
-server.get('/health', (req, res) => {
-  return res.json({ message: 'App is running' });
-});
+server.use(cors({ origin: '*' }));
 
 server.use(routes);
 
