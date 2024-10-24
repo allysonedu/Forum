@@ -10,7 +10,7 @@ export const OpenRoutes: React.FC = () => {
       <Route path="/" element={<Login />} />
       <Route path="/sign-up" element={<SignUp />} />
 
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };

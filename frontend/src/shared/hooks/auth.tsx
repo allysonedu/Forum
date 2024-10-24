@@ -33,12 +33,12 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   const [data, setData] = useState<ILogin>(() => {
     const payload = localStorage.getItem(environment.APP_NAME);
 
+    debugger;
+
     if (payload) {
       const parsedPayload = JSON.parse(payload);
 
-      const { token, user } = parsedPayload;
-
-      return { token, user };
+      return { user: {} as IUser, token: parsedPayload };
     }
 
     return {} as ILogin;

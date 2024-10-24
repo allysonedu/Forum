@@ -6,12 +6,10 @@ import {
   Dialog,
   Button,
   TextField,
+  Box,
 } from '@mui/material';
-
 import { createTopics, getAllTopics } from '../../../api/topics_api';
-
 import MessageIcon from '@mui/icons-material/Message';
-
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
@@ -25,6 +23,9 @@ export const TopicList: React.FC = () => {
   const [messagesMap, setMessagesMap] = useState<Record<number, Array<any>>>(
     {}
   );
+  const [newMessage, setNewMessage] = useState<string>('');
+  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
+  const [openMessageDialog, setOpenMessageDialog] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,15 +33,11 @@ export const TopicList: React.FC = () => {
       setTopicsList(response.data);
     };
     fetchData();
-  }, []);
+  }, [saveTopic]);
 
-  const [titleTopic, settitleTopic] = useState('');
-  const [descriptionTopic, setdescriptionTopic] = useState('');
-
-  async function getmessage(id: number | undefined) {
+  async function getMessages(id: number | undefined) {
     if (id) {
       const response = await getByTopicId(id);
-      // Atualiza o mapa de mensagens, associando as mensagens ao tópico clicado.
       setMessagesMap(prevMessagesMap => ({
         ...prevMessagesMap,
         [id]: response.data,
@@ -48,18 +45,39 @@ export const TopicList: React.FC = () => {
     }
   }
 
+  async function handleCreateMessage(topicId: number | undefined) {
+    if (topicId && newMessage) {
+      await createMessages({ content: newMessage, topic_id: topicId });
+      setNewMessage(''); // Limpa a mensagem após envio
+      getMessages(topicId); // Atualiza as mensagens após criar uma nova
+    }
+    setOpenMessageDialog(false);
+  }
+
+  const handleMessageClickOpen = (topicId: number | null) => {
+    setSelectedTopicId(topicId);
+    setOpenMessageDialog(true);
+  };
+
+  const handleMessageClose = () => {
+    setOpenMessageDialog(false);
+    setNewMessage('');
+  };
+
+  const [titleTopic, setTitleTopic] = useState('');
+  const [descriptionTopic, setDescriptionTopic] = useState('');
+  const [open, setOpen] = useState(false);
+
   async function saveTopic() {
     try {
       await createTopics({ title: titleTopic, content: descriptionTopic });
-      settitleTopic('');
-      setdescriptionTopic('');
+      setTitleTopic('');
+      setDescriptionTopic('');
       handleClose();
     } catch (error) {
       console.error('Erro ao salvar o tópico:', error);
     }
   }
-
-  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -75,11 +93,12 @@ export const TopicList: React.FC = () => {
         <Grid item xs={12}>
           <Button
             type="button"
-            onClick={() => {
-              handleClickOpen();
-            }}
+            onClick={handleClickOpen}
             variant="contained"
             color="primary"
+            sx={{
+              marginBottom: '20px',
+            }}
           >
             Novo Tópico
           </Button>
@@ -87,27 +106,47 @@ export const TopicList: React.FC = () => {
 
         {topicsList.map((topic, index) => (
           <Grid item xs={12} key={index}>
-            <Paper
-              elevation={3}
-              style={{ padding: '50px', marginBottom: '100px' }}
-            >
+            <Paper elevation={3} sx={{ padding: '20px', marginBottom: '20px' }}>
               <Typography variant="h5">{topic.title}</Typography>
-              <Typography variant="h6">{topic.content}</Typography>
-              <Typography variant="body2">Posted by {topic.user_id}</Typography>
-              <Typography variant="caption">
-                <IconButton
-                  type="button"
-                  aria-label="messages"
-                  onClick={() => getmessage(topic.id)}
-                >
-                  <MessageIcon />
-                </IconButton>
+              <Typography variant="h6" gutterBottom>
+                {topic.content}
               </Typography>
+              <Typography variant="body2" gutterBottom>
+                Postado por {topic.user_name}
+              </Typography>
+              <IconButton
+                type="button"
+                aria-label="messages"
+                onClick={() => getMessages(topic.id)}
+                color="primary"
+              >
+                <MessageIcon />
+              </IconButton>
 
               {/* Renderizar apenas as mensagens do tópico clicado */}
               {messagesMap[topic.id]?.map((message, msgIndex) => (
-                <Typography key={msgIndex}>{message.content}</Typography>
+                <Paper
+                  key={msgIndex}
+                  sx={{
+                    padding: '10px',
+                    marginTop: '10px',
+                    background: '#f5f5f5',
+                  }}
+                >
+                  <Typography variant="body2" gutterBottom>
+                    {message.content}
+                  </Typography>
+                </Paper>
               ))}
+
+              <Box sx={{ marginTop: '10px' }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => handleMessageClickOpen(topic.id)}
+                >
+                  Comentar tópico
+                </Button>
+              </Box>
             </Paper>
           </Grid>
         ))}
@@ -136,17 +175,17 @@ export const TopicList: React.FC = () => {
         </IconButton>
         <DialogContent dividers>
           <Grid container spacing={2}>
-            <Grid xs={12} item>
+            <Grid item xs={12}>
               <TextField
                 id="title"
-                label="Titulo"
+                label="Título"
                 multiline
                 fullWidth
                 value={titleTopic}
-                onChange={e => settitleTopic(e.target.value)}
+                onChange={e => setTitleTopic(e.target.value)}
               />
             </Grid>
-            <Grid xs={12} item>
+            <Grid item xs={12}>
               <TextField
                 id="outlined-multiline-static"
                 label="Descrição"
@@ -154,14 +193,41 @@ export const TopicList: React.FC = () => {
                 rows={4}
                 fullWidth
                 value={descriptionTopic}
-                onChange={e => setdescriptionTopic(e.target.value)}
+                onChange={e => setDescriptionTopic(e.target.value)}
               />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={saveTopic}>
+          <Button autoFocus onClick={saveTopic} variant="contained">
             Salvar Tópico
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Modal para criar uma nova mensagem */}
+      <Dialog open={openMessageDialog} onClose={handleMessageClose}>
+        <DialogTitle>Criar Mensagem</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Mensagem"
+            value={newMessage}
+            onChange={e => setNewMessage(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleMessageClose} color="secondary">
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => handleCreateMessage(selectedTopicId)}
+            variant="contained"
+            color="primary"
+          >
+            Enviar
           </Button>
         </DialogActions>
       </Dialog>

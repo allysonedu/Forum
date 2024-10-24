@@ -14,7 +14,9 @@ module.exports = {
   },
 
   async getAllTopics() {
-    return connection('topics');
+    return connection('topics')
+      .join('users', 'users.id', '=', 'topics.user_id')
+      .select('users.name as user_name', 'topics.*');
   },
 
   async getOneTopics(idTopics) {

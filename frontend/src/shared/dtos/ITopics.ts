@@ -6,4 +6,5 @@ export interface ITopics {
   responses_count?: number | null;
   status?: string | null;
   user_id?: string | null;
+  user_name?: string | null;
 }
