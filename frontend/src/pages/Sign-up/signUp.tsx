@@ -23,28 +23,29 @@ import { FaUser } from 'react-icons/fa6';
 import { useForm } from 'react-hook-form';
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '../../shared/hooks/auth';
 import { InputText } from '../../shared/components';
 
-const LoginFormValidationSchema = zod.object({
+import { register } from '../../api/api';
+
+const SignUpFormValidationSchema = zod.object({
+  name: zod.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
   email: zod.string().email('Digite um email válido'),
   password: zod.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
 });
 
-type LoginFormType = zod.infer<typeof LoginFormValidationSchema>;
+type SignUpFormType = zod.infer<typeof SignUpFormValidationSchema>;
 
 const defaultTheme = createTheme();
 
-export const Login: React.FC = () => {
+export const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false);
-
-  const { signIn } = useAuth();
 
   const navigate = useNavigate();
 
-  const methods = useForm<LoginFormType>({
-    resolver: zodResolver(LoginFormValidationSchema),
+  const methods = useForm<SignUpFormType>({
+    resolver: zodResolver(SignUpFormValidationSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
@@ -52,25 +53,20 @@ export const Login: React.FC = () => {
 
   const { handleSubmit, control } = methods;
 
-  const handleSubmitLogin = useCallback(
-    async (data: LoginFormType) => {
+  const handleSubmitUsersRegister = useCallback(
+    async (data: SignUpFormType) => {
       try {
         setLoading(true);
 
-        const result = await signIn({
-          email: data.email,
-          password: data.password,
-        });
+        await register(data);
 
-        navigate('/dashboard');
-        console.log(result?.user);
+        navigate('/');
       } catch (err: any) {
-        console.error('Error:', err);
       } finally {
         setLoading(false);
       }
     },
-    [signIn]
+    []
   );
 
   return (
@@ -89,9 +85,21 @@ export const Login: React.FC = () => {
             <FaUser />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Login
+            Cadastro
           </Typography>
-          <form onSubmit={handleSubmit(handleSubmitLogin)} noValidate>
+          <form onSubmit={handleSubmit(handleSubmitUsersRegister)} noValidate>
+            <InputText
+              margin="normal"
+              required
+              fullWidth
+              name="name"
+              label="Nome"
+              control={control}
+              type="Name"
+              id="Name"
+              autoComplete="current-name"
+            />
+
             <InputText
               margin="normal"
               required
@@ -128,12 +136,12 @@ export const Login: React.FC = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Entrar
+              Cadastrar-se
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/sign-up" variant="body2">
-                  {'Você não tem uma conta? Cadastrar '}
+                <Link href="/" variant="body2">
+                  {'Você já tem uma conta? Login '}
                 </Link>
               </Grid>
             </Grid>

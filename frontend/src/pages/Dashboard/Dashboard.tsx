@@ -1,8 +1,10 @@
+import { TopicList } from '../../shared/components';
+import { BaseLayoutPage } from '../../shared/layouts/BaseLayoutPage';
+
 export const Dashboard: React.FC = () => {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome to the dashboard!</p>
-    </div>
+    <BaseLayoutPage>
+      <TopicList />
+    </BaseLayoutPage>
   );
 };

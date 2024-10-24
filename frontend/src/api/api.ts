@@ -14,4 +14,19 @@ const login = async (email: string, password: string) => {
   }
 };
 
-export { login };
+interface IUsersRegisterProps {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const register = async (data: IUsersRegisterProps) => {
+  try {
+    const result = await api.post('/users', data);
+    return result.data;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export { login, register };

@@ -47,7 +47,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   const signIn = useCallback(async ({ email, password }: SignInCredencials) => {
     const { data } = await login(email, password);
 
-    localStorage.setItem(environment.APP_NAME, JSON.stringify(data));
+    localStorage.setItem(environment.APP_NAME, JSON.stringify(data.token));
 
     setData(data);
 

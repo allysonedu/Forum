@@ -6,10 +6,14 @@ import { AppRoutes } from './routes/index';
 
 import '../global.css';
 
+import { AuthProvider } from '../src/shared/hooks/auth';
+
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
