@@ -3,13 +3,11 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../errors/AppError');
 
 module.exports = async (request, response, next) => {
-  const { authorization } = request.headers;
+  const authHeader = request.headers.authorization;
 
-  if (!authorization) {
-    return response.status(401).json({ error: 'Token not provided' });
-  }
+  if (!authHeader) throw new AppError('Token not provided');
 
-  const [, token] = authorization.split(' ');
+  const token = authHeader.split(' ')[1].replaceAll('"', '');
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

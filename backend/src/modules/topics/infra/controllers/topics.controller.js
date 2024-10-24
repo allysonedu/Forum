@@ -8,7 +8,7 @@ const DeleteTopicsService = require('../../services/DeleteTopicsService');
 
 module.exports = {
   async createTopics(resquest, response) {
-    const { title, content, views, responses_count, status } = resquest.body;
+    const { title, content, likes, responses_count } = resquest.body;
 
     const { id } = resquest.user;
 
@@ -17,9 +17,9 @@ module.exports = {
     const topicCreated = await createTopicsService.execute({
       title,
       content,
-      views,
+      likes,
       responses_count,
-      status,
+      status: 'active',
       user_id: id,
     });
 

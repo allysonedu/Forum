@@ -1,7 +1,7 @@
 const { Router } = require('express');
 
 const {
-  getAllMessages,
+  getByTopicId,
   getOneMessages,
   createMessages,
   deleteMessages,
@@ -14,9 +14,9 @@ const {
 
 const messagesRouter = Router();
 
-messagesRouter.get('/', getAllMessages);
+messagesRouter.get('/:topic_id', getByTopicId);
 
-messagesRouter.get('/:messageId', getOneMessages);
+//messagesRouter.get('/:messageId', getOneMessages);
 
 messagesRouter.post('/', verifyPayloadForCreation(), createMessages);
 

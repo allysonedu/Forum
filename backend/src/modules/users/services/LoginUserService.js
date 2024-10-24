@@ -18,6 +18,7 @@ class LoginUserService {
     await comparePassword(password, user.password);
 
     delete user.password; // Remove password from response
+
     const token = jwt.sign(
       { id: user.id, name: user.name },
       process.env.JWT_SECRET,

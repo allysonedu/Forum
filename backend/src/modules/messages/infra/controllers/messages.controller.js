@@ -21,8 +21,8 @@ module.exports = {
     return response.json({ data: message });
   },
 
-  async getAllMessages(request, response) {
-    const { topic_id } = request.body;
+  async getByTopicId(request, response) {
+    const { topic_id } = request.params;
 
     const getMessagesByTopicServices = new GetMessagesByTopicServices(
       messagesRepository
@@ -30,7 +30,7 @@ module.exports = {
 
     const messages = await getMessagesByTopicServices.execute(topic_id);
 
-    return response.json({ data: messages });
+    return response.json(messages);
   },
 
   async getOneMessages(request, response) {

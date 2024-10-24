@@ -6,9 +6,9 @@ module.exports = {
       [Segments.BODY]: {
         title: Joi.string().required(), // Título obrigatório
         content: Joi.string().allow(null, ''), // Conteúdo pode ser nulo ou vazio
-        status: Joi.boolean().required(), // Status booleano obrigatório
-        responses_count: Joi.number().allow(null), // Número de respostas pode ser nulo
-        views: Joi.number().allow(null),
+        status: Joi.string().optional(), // Status booleano obrigatório
+        responses_count: Joi.number().optional(), // Número de respostas pode ser nulo
+        likes: Joi.number().optional(),
       },
     });
   },

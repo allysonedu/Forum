@@ -3,11 +3,11 @@ class CreateTopicsService {
     this.topicsRepository = topicsRepository;
   }
 
-  async execute({ title, content, views, responses_count, status, user_id }) {
+  async execute({ title, content, likes, responses_count, status, user_id }) {
     const topics = await this.topicsRepository.createTopics({
       title,
       content,
-      views,
+      likes,
       responses_count,
       status,
       user_id,
