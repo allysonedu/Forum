@@ -6,7 +6,7 @@ import { Dashboard } from '../pages';
 
 import { CreateTopics } from '../shared/components/forum-hook/topic-create';
 
-import { TopicList } from '../shared/components/forum-hook/topic-forum';
+import { TopicList } from '../shared/components/forum-hook/topicList';
 
 export const PrivateRoutes: React.FC = () => {
   return (

@@ -16,7 +16,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
     <React.Fragment>
       <CssBaseline />
       <NavForum />
-      <Container maxWidth="sm">
+      <Container sx={{ marginTop: '100px' }} maxWidth="sm">
         {toolbar && <Box>{toolbar}</Box>}
 
         <Box sx={{ borderRadius: '10px', bgcolor: '#cfe8fc', height: '100%' }}>

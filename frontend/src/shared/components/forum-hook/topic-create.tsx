@@ -35,8 +35,8 @@ export const CreateTopics: React.FC = () => {
     defaultValues: {
       title: '',
       content: '',
-      likes: '',
-      responses_count: '',
+      likes: 0,
+      responses_count: 0,
     },
   });
 
