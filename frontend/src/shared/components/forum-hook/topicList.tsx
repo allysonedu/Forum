@@ -8,15 +8,25 @@ import {
   TextField,
   Box,
 } from '@mui/material';
-import { createTopics, getAllTopics } from '../../../api/topics_api';
+import {
+  createTopics,
+  getAllTopics,
+  deleteTopics,
+} from '../../../api/topics_api';
 import MessageIcon from '@mui/icons-material/Message';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import { ITopics } from '../../dtos';
-import { createMessages, getByTopicId } from '../../../api/messages';
+import {
+  createMessages,
+  getByTopicId,
+  deleteMessages,
+} from '../../../api/messages';
 
 export const TopicList: React.FC = () => {
   const [topicsList, setTopicsList] = useState<Array<ITopics>>([]);
@@ -48,8 +58,8 @@ export const TopicList: React.FC = () => {
   async function handleCreateMessage(topicId: number | undefined) {
     if (topicId && newMessage) {
       await createMessages({ content: newMessage, topic_id: topicId });
-      setNewMessage(''); // Limpa a mensagem após envio
-      getMessages(topicId); // Atualiza as mensagens após criar uma nova
+      setNewMessage('');
+      getMessages(topicId);
     }
     setOpenMessageDialog(false);
   }
@@ -87,18 +97,41 @@ export const TopicList: React.FC = () => {
     setOpen(false);
   };
 
+  async function handleDeleteTopic(topicId: number) {
+    try {
+      // Primeiro, exclui todas as mensagens associadas ao tópico
+      console.log('Tentando deletar mensagens associadas ao tópico', topicId);
+      await deleteMessages(topicId);
+      console.log('Mensagens deletadas com sucesso');
+
+      // Em seguida, exclui o próprio tópico
+      await deleteTopics(topicId);
+      console.log('Tópico deletado com sucesso');
+
+      // Atualiza o estado do frontend
+      setTopicsList(prev => prev.filter(topic => topic.id !== topicId));
+      setMessagesMap(prevMessagesMap => {
+        const updatedMessages = { ...prevMessagesMap };
+        delete updatedMessages[topicId];
+        return updatedMessages;
+      });
+    } catch (error) {
+      console.error('Erro ao deletar o tópico e as mensagens:', error);
+      alert(
+        'Erro ao deletar o tópico e suas mensagens. Por favor, tente novamente.'
+      );
+    }
+  }
+
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Button
-            type="button"
             onClick={handleClickOpen}
             variant="contained"
             color="primary"
-            sx={{
-              marginBottom: '20px',
-            }}
+            sx={{ marginBottom: '20px' }}
           >
             Novo Tópico
           </Button>
@@ -107,7 +140,20 @@ export const TopicList: React.FC = () => {
         {topicsList.map((topic, index) => (
           <Grid item xs={12} key={index}>
             <Paper elevation={3} sx={{ padding: '20px', marginBottom: '20px' }}>
-              <Typography variant="h5">{topic.title}</Typography>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="h5">{topic.title}</Typography>
+                <IconButton
+                  onClick={() => handleDeleteTopic(topic.id)}
+                  color="error"
+                  aria-label="delete-topic"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
               <Typography variant="h6" gutterBottom>
                 {topic.content}
               </Typography>
@@ -115,7 +161,6 @@ export const TopicList: React.FC = () => {
                 Postado por {topic.user_name}
               </Typography>
               <IconButton
-                type="button"
                 aria-label="messages"
                 onClick={() => getMessages(topic.id)}
                 color="primary"
@@ -153,14 +198,8 @@ export const TopicList: React.FC = () => {
       </Grid>
 
       {/* Modal para criar um novo tópico */}
-      <Dialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-      >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Criar Tópico
-        </DialogTitle>
+      <Dialog onClose={handleClose} open={open}>
+        <DialogTitle>Criar Tópico</DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -177,9 +216,7 @@ export const TopicList: React.FC = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                id="title"
                 label="Título"
-                multiline
                 fullWidth
                 value={titleTopic}
                 onChange={e => setTitleTopic(e.target.value)}
@@ -187,11 +224,10 @@ export const TopicList: React.FC = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="outlined-multiline-static"
                 label="Descrição"
+                fullWidth
                 multiline
                 rows={4}
-                fullWidth
                 value={descriptionTopic}
                 onChange={e => setDescriptionTopic(e.target.value)}
               />
@@ -199,7 +235,7 @@ export const TopicList: React.FC = () => {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={saveTopic} variant="contained">
+          <Button onClick={saveTopic} variant="contained">
             Salvar Tópico
           </Button>
         </DialogActions>

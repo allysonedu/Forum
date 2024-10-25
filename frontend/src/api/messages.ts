@@ -12,9 +12,9 @@ const createMessages = async (data: IMessages) => {
   }
 };
 
-const deleteMessages = async (id: number) => {
+const deleteMessages = async (messageId: number) => {
   try {
-    const result = await api.delete(`/messages/${id}`);
+    const result = await api.delete(`/messages/${messageId}`);
     return result.data;
   } catch (error: any) {
     throw new Error(error.message);

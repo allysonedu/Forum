@@ -12,7 +12,7 @@ import { PrivateRoutes } from './PrivateRoutes';
 
 export const AppRoutes: React.FC = () => {
   const { user, token } = useAuth();
-  debugger;
+
   if (token) {
     const decoded = jwtDecode<JwtPayload>(token);
     if (user && decoded.exp && decoded.exp >= new Date().getTime() / 1000) {

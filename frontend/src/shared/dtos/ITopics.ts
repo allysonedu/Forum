@@ -1,5 +1,5 @@
 export interface ITopics {
-  id?: number;
+  id: number;
   title: string;
   content: string;
   likes?: number | null;

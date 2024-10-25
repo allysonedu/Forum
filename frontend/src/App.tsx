@@ -9,6 +9,7 @@ import '../global.css';
 import { AuthProvider } from '../src/shared/hooks/auth';
 
 export const App: React.FC = () => {
+  debugger;
   return (
     <AuthProvider>
       <BrowserRouter>

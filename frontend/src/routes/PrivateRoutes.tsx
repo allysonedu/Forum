@@ -14,7 +14,7 @@ export const PrivateRoutes: React.FC = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="topicsList" element={<TopicList />} />
       {/* <Route path="create-topic" element={<CreateTopics />} /> */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
 };
