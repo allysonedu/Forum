@@ -1,7 +1,6 @@
 const AppError = require('../../../shared/errors/AppError');
 
 const connection = require('../../../shared/database/connection');
-const { deleteMessages } = require('../infra/controllers/messages.controller');
 
 module.exports = {
   async createMessages(payload) {
