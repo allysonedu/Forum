@@ -160,6 +160,4 @@ Contribuições são bem-vindas! Para contribuir:
 3. Faça suas alterações.
 4. Envie um pull request.
 
-Certifique-se de rodar os testes antes de submeter sua contribuição.
-
 ### OBRIGADO PELA OPORTUNIDADE!
